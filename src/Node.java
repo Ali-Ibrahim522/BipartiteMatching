@@ -1,18 +1,25 @@
-import java.util.Collections;
 import java.util.LinkedList;
 
 public class Node {
-    private LinkedList<String> edges;
+    NodeSorter sorter;
+    private String name;
+    private LinkedList<Node> edges;
 
     public Node(String name) {
-        edges = new LinkedList<String>();
+        sorter = new NodeSorter();
+        this.name = name;
+        edges = new LinkedList<Node>();
     }
 
-    public void addEdge(String node) {
+    public String getName() {
+        return name;
+    }
+
+    public void addEdge(Node node) {
         edges.add(node);
     }
 
-    public String getNext() {
+    public Node getNext() {
         return edges.peek();
     }
 
@@ -21,6 +28,6 @@ public class Node {
     }
 
     public void sortEdges() {
-        Collections.sort(edges);
+        edges.sort(sorter);
     }
 }
