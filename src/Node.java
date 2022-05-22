@@ -1,33 +1,31 @@
 import java.util.LinkedList;
 
 public class Node {
-    NodeSorter sorter;
     private String name;
-    private LinkedList<Node> edges;
+    private LinkedList<Integer> edges;
 
     public Node(String name) {
-        sorter = new NodeSorter();
         this.name = name;
-        edges = new LinkedList<Node>();
+        edges = new LinkedList<Integer>();
     }
 
     public String getName() {
         return name;
     }
 
-    public void addEdge(Node node) {
+    public void addEdge(int node) {
         edges.add(node);
     }
 
-    public Node getNext() {
-        return edges.peek();
+    public int getNext() {
+        return edges.size() == 0 ? -1 : edges.peek();
     }
 
-    public void removeEdge(String node) {
-        edges.remove();
+    public void removeEdge(int node) {
+        edges.remove(node);
     }
 
-    public void sortEdges() {
-        edges.sort(sorter);
+    public void clearEdges() {
+        edges.clear();
     }
 }
