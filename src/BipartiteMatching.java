@@ -13,17 +13,18 @@ public class BipartiteMatching {
         while (true) {
             Node[] levelGraph = new Node[graph.length];
             if (!createLG(levelGraph)) { break; }
-            Node curr = levelGraph[levelGraph[SOURCE].getNext()];
+            Node curr = levelGraph[SOURCE];
             Stack<Integer> path = new Stack<>();
             path.add(SOURCE);
             while (curr != levelGraph[SOURCE] || curr.getNext() != -1) {
                 if (curr == levelGraph[SINK]) {
-                    int to = path.pop();
-                    for (int i = 0; i < path.size(); i++) {
+                    int to;
+                    int sizeOfPath = path.size() - 1;
+                    for (int i = 0; i < sizeOfPath; i++) {
+                        to = path.pop();
                         levelGraph[path.peek()].removeEdge(to);
                         graph[path.peek()].removeEdge(to);
                         graph[to].addEdge(path.peek());
-                        to = path.pop();
                     }
                     curr = levelGraph[SOURCE];
                     path.clear();
@@ -31,7 +32,7 @@ public class BipartiteMatching {
                 } else if (curr.getNext() == -1) {
                     int removedNode = path.pop();
                     curr = levelGraph[path.peek()];
-                    for (int i = 1; i < levelGraph.length - 1; i++) {
+                    for (int i = 0; i < levelGraph.length - 1; i++) {
                         levelGraph[i].removeEdge(removedNode);
                     }
                 } else {
@@ -44,12 +45,15 @@ public class BipartiteMatching {
     }
 
     public void outputMatchings() {
-        for (int i = 1; i < SINK - 1; i++) {
+        int numOfMatches = 0;
+        for (int i = 6; i < graph.length - 1; i++) {
             int match = graph[i].getNext();
-            if (match != -1) {
-                System.out.println(graph[i].getName() + " / " + graph[match].getName());
+            if (match != SOURCE && match != SINK) {
+                numOfMatches++;
+                System.out.println(graph[match].getName() + " / " + graph[i].getName());
             }
         }
+        System.out.println(numOfMatches + " total matches");
     }
 
     public boolean createLG(Node[] levelGraph) {
@@ -85,7 +89,6 @@ public class BipartiteMatching {
             Scanner in = new Scanner(file);
             int n = in.nextInt();
             in.nextLine();
-            System.out.println(n);
             graph = new Node[n + 2];
             SOURCE = 0;
             SINK = n + 1;
@@ -94,12 +97,10 @@ public class BipartiteMatching {
             int mid = n / 2;
             for (int i = 1; i <= mid; i++) {
                 graph[i] = new Node(in.nextLine());
-                System.out.println(graph[i].getName());
                 graph[SOURCE].addEdge(i);
             }
             for (int i = mid + 1; i <= n; i++) {
                 graph[i] = new Node(in.nextLine());
-                System.out.println(graph[i].getName());
                 graph[i].addEdge(SINK);
             }
             int m = in.nextInt();

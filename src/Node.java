@@ -22,7 +22,7 @@ public class Node {
     }
 
     public void removeEdge(int node) {
-        edges.remove((Object)node);
+        edges.remove((Integer) node);
     }
 
     public Object[] getEdges() {
