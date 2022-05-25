@@ -30,7 +30,6 @@ public class BipartiteMatching {
                         graph[path.peek()].removeEdge(to);
                         graph[to].addEdge(path.peek());
                     }
-                    System.out.println();
                     curr = levelGraph[SOURCE];
                 } else if (curr.getNext() == -1) {
                     int removedNode = path.pop();
@@ -65,10 +64,10 @@ public class BipartiteMatching {
     }
 
     public boolean createLG(Node[] levelGraph) {
-//        Construct level graph LG from Gf using breadth-first search (delete back and cross edges).
-//        If no path exists from source to sink (i.e., sink not found during BFS), output matching, done.
-//        Initialize location to source node, path to empty.
         HashSet<Integer> visited = new HashSet<Integer>();
+        int[] level = new int[graph.length];
+        Arrays.fill(level, -1);
+        level[SOURCE] = 0;
         Queue<Integer> bfs = new LinkedList<>();
         for (int i = 0; i < graph.length; i++) {
             levelGraph[i] = new Node(graph[i].getName());
@@ -79,14 +78,19 @@ public class BipartiteMatching {
             int curr = bfs.peek();
             bfs.remove();
             if (curr == SINK) { foundSink = true; }
-            if (!visited.contains(curr)) {
-                visited.add(curr);
-                Object[] currEdges = graph[curr].getEdges();
-                for (Object currEdge : currEdges) {
-                    levelGraph[curr].addEdge((int) currEdge);
-                    bfs.add((int) currEdge);
+                for (Object currEdge : graph[curr].getEdges()) {
+                    int edge = (int) currEdge;
+                    if (level[edge] == -1) {
+                        level[edge] = level[curr] + 1;
+                    }
+                    if (level[edge] > level[curr]) {
+                        levelGraph[curr].addEdge(edge);
+                    }
+                    if (!visited.contains(edge)) {
+                        visited.add(edge);
+                        bfs.add(edge);
+                    }
                 }
-            }
         }
         return foundSink;
     }
