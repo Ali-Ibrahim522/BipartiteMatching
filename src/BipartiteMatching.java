@@ -23,15 +23,15 @@ public class BipartiteMatching {
                     int sizeOfPath = path.size() - 1;
                     for (int i = 0; i < sizeOfPath; i++) {
                         to = path.pop();
-                        System.out.print(to + " ");
+                        if (to > N / 2 && to != SINK) {
+                            graph[path.peek()].setMatch(to);
+                        }
                         levelGraph[path.peek()].removeEdge(to);
                         graph[path.peek()].removeEdge(to);
                         graph[to].addEdge(path.peek());
                     }
                     System.out.println();
                     curr = levelGraph[SOURCE];
-                    path.clear();
-                    path.add(0);
                 } else if (curr.getNext() == -1) {
                     int removedNode = path.pop();
                     curr = levelGraph[path.peek()];
@@ -40,11 +40,12 @@ public class BipartiteMatching {
                             levelGraph[i].removeEdge(removedNode);
                         }
                     } else {
-                        levelGraph[0].removeEdge(removedNode);
+                        levelGraph[SOURCE].removeEdge(removedNode);
                     }
                 } else {
                     path.push(curr.getNext());
                     curr = levelGraph[curr.getNext()];
+
                 }
             }
         }
@@ -54,8 +55,8 @@ public class BipartiteMatching {
     public void outputMatchings() {
         int numOfMatches = 0;
         for (int i = 1; i <= N / 2; i++) {
-            int match = graph[i].getNext();
-            if (match != SOURCE && match != SINK) {
+            int match = graph[i].getMatch();
+            if (match != -1) {
                 numOfMatches++;
                 System.out.println(graph[i].getName() + " / " + graph[match].getName());
             }
@@ -64,6 +65,9 @@ public class BipartiteMatching {
     }
 
     public boolean createLG(Node[] levelGraph) {
+//        Construct level graph LG from Gf using breadth-first search (delete back and cross edges).
+//        If no path exists from source to sink (i.e., sink not found during BFS), output matching, done.
+//        Initialize location to source node, path to empty.
         HashSet<Integer> visited = new HashSet<Integer>();
         Queue<Integer> bfs = new LinkedList<>();
         for (int i = 0; i < graph.length; i++) {
