@@ -3,14 +3,12 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public class BipartiteMatching {
-    //array holding of nodes
-    //looks like [source, bipartite nodes..., sink]
-    private Node[] graph;
-    private int N;
-    private int SOURCE;
-    private int SINK;
+    private Node[] graph; //array holding residual graph, looks like [source, bipartite nodes..., sink]
+    private int N; // number of nodes (not including source/sink)
+    private int SOURCE; // index of source node in residual graph array
+    private int SINK; // index of sink node in residual graph array
 
-    public void fordFulkerson() {
+    public void maxMatches() {
         while (true) {
             Node[] levelGraph = new Node[graph.length];
             if (!createLG(levelGraph)) { break; }
@@ -23,9 +21,7 @@ public class BipartiteMatching {
                     int sizeOfPath = path.size() - 1;
                     for (int i = 0; i < sizeOfPath; i++) {
                         to = path.pop();
-                        if (to > N / 2 && to != SINK) {
-                            graph[path.peek()].setMatch(to);
-                        }
+                        graph[path.peek()].setMatch(to);
                         levelGraph[path.peek()].removeEdge(to);
                         graph[path.peek()].removeEdge(to);
                         graph[to].addEdge(path.peek());
@@ -34,12 +30,8 @@ public class BipartiteMatching {
                 } else if (curr.getNext() == -1) {
                     int removedNode = path.pop();
                     curr = levelGraph[path.peek()];
-                    if (removedNode > N / 2) {
-                        for (int i = 1; i <= N / 2; i++) {
-                            levelGraph[i].removeEdge(removedNode);
-                        }
-                    } else {
-                        levelGraph[SOURCE].removeEdge(removedNode);
+                    for (Node node : levelGraph) {
+                        node.removeEdge(removedNode);
                     }
                 } else {
                     path.push(curr.getNext());
