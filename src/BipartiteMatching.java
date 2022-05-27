@@ -44,7 +44,6 @@ public class BipartiteMatching {
                 } else {
                     path.push(curr.getNext());
                     curr = levelGraph[curr.getNext()];
-
                 }
             }
         }
