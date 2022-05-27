@@ -8,7 +8,7 @@ public class BipartiteMatching {
     private int SOURCE; // index of source node in residual graph array
     private int SINK; // index of sink node in residual graph array
 
-    public void fordFulkerson() {
+    public void maxMatches() {
         while (true) {
             Node[] levelGraph = new Node[graph.length];
             if (!createLG(levelGraph)) { break; }

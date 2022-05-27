@@ -14,9 +14,11 @@ public class Node {
     public void setMatch(int node) {
         match = node;
     }
+
     public int getMatch() {
         return match;
     }
+
     public String getName() {
         return name;
     }
@@ -35,9 +37,5 @@ public class Node {
 
     public Object[] getEdges() {
         return edges.toArray();
-    }
-
-    public void clearEdges() {
-        edges.clear();
     }
 }
