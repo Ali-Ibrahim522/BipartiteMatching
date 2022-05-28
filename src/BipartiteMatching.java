@@ -1,10 +1,11 @@
 /**
  * Class that processes input file, and uses
- * the Ford-Fulkerson Algorithm using the shortest augmenting paths method
+ * the Ford-Fulkerson Algorithm using the shortest augmenting paths' method
  * to determine the matches of the nodes in the graph
  * Functionality includes initializing graph[] array,
  * then using Ford-Fulkerson Algorithm, as well
  * as creating the level graphs for the algorithm
+ *
  * @author Ali Ibrahim and Omar Shaban
  */
 
@@ -20,16 +21,16 @@ public class BipartiteMatching {
     private int SINK; // index of sink node in residual graph array
 
     /**
-     * uses createLG() outputMatchings() and methods to sort then use algorithm
+     * uses createLG() and outputMatching() methods to sort then use algorithm
      * to find minimum distance in points array
      * pre: graph array is initialized
-     * post: all match variables are set in nodes of graph[] array
+     * post: all found matches are set in nodes of graph[] array
      */
     public void maxMatches() {
         // creates Node array with size of graph[]
         Node[] levelGraph = new Node[graph.length];
         // runs createLG() to see if there is path to SINK
-        boolean done = !createLG(levelGraph);
+        boolean done = createLG(levelGraph);
         while (!done) {
             // sets current as SOURCE
             Node curr = levelGraph[SOURCE];
@@ -38,41 +39,50 @@ public class BipartiteMatching {
             path.add(SOURCE);
             // while not stuck at source
             while (curr != levelGraph[SOURCE] || curr.getNext() != -1) {
+                //if path completed
                 if (curr == levelGraph[SINK]) {
                     int to;
                     int sizeOfPath = path.size() - 1;
                     for (int i = 0; i < sizeOfPath; i++) {
                         to = path.pop();
+                        // record matching
                         graph[path.peek()].setMatch(to);
+                        // delete path from level graph
                         levelGraph[path.peek()].removeEdge(to);
+                        // augments flow in residual graph
                         graph[path.peek()].removeEdge(to);
                         graph[to].addEdge(path.peek());
                     }
+                    // start search again from source node
                     curr = levelGraph[SOURCE];
+                // if stuck while traversing
                 } else if (curr.getNext() == -1) {
                     int removedNode = path.pop();
+                    //retreat to previous node
                     curr = levelGraph[path.peek()];
+                    //disconnect node from level graph
                     for (Node node : levelGraph) {
                         node.removeEdge(removedNode);
                     }
                 } else {
+                    //traverse further in level graph
                     path.push(curr.getNext());
                     curr = levelGraph[curr.getNext()];
                 }
             }
-            done = !createLG(levelGraph);
+            done = createLG(levelGraph);
         }
-        outputMatchings();
+        outputMatching();
     }
 
     /**
      * Outputs matching of nodes
      * pre: points inputted are valid points
-     * post: returns the distance between the 2 parameter points
+     * post: outputs all matches in the max matches
      */
-    public void outputMatchings() {
+    public void outputMatching() {
         int numOfMatches = 0;
-        // goes through graph[], and outputs matches for each nodes,
+        // goes through graph[], and outputs matches for each node,
         // and has a counter of total number of matches
         for (int i = 1; i <= N / 2; i++) {
             int match = graph[i].getMatch();
@@ -87,12 +97,11 @@ public class BipartiteMatching {
     }
 
     /**
-     * uses BFS to see if there is a path to SINK
+     * uses BFS to create a level graph and sees if there is a path to SINK
      * pre: initializeData() is successfully run
-     * post: sets levelGraph variable and
+     * post: sets levelGraph variable and returns if there is a path to the sink
      */
     public boolean createLG(Node[] levelGraph) {
-        //
         int[] level = new int[graph.length];
         //SOURCE level is set to 1 instead of 0 since java initializes
         // arrays to 0, so no need to set level[] array to -1
@@ -106,19 +115,23 @@ public class BipartiteMatching {
         while (!bfs.isEmpty()) {
             int curr = bfs.peek();
             bfs.remove();
+            // if there is a path to the sink
             if (curr == SINK) { foundSink = true; }
+                // for each outgoing edge from curr
                 for (Object currEdge : graph[curr].getEdges()) {
                     int edge = (int) currEdge;
+                    // if new node is encountered
                     if (level[edge] == 0) {
                         level[edge] = level[curr] + 1;
                         bfs.add(edge);
                     }
+                    // adding only worthwhile edges to level graph
                     if (level[edge] > level[curr]) {
                         levelGraph[curr].addEdge(edge);
                     }
                 }
         }
-        return foundSink;
+        return !foundSink;
     }
 
     /**
@@ -160,7 +173,7 @@ public class BipartiteMatching {
             }
             in.close();
         } catch (FileNotFoundException ex) {
-            // catchs and prints if file is not found
+            // catches and prints if file is not found
             System.out.println("File not found");
         }
     }

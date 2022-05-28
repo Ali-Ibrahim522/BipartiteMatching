@@ -71,9 +71,9 @@ public class Node {
     }
 
     /**
-     * mutator to remove from "edges" LinkedList
-     * pre: "edges" LinkedList has no
-     * post: removes parameter into "edges" LinkedList
+     * mutator to remove nodes from "edges" LinkedList
+     * pre: none
+     * post: removes parameter from "edges" LinkedList
      */
     public void removeEdge(int node) {
         edges.remove((Integer) node);
