@@ -9,9 +9,9 @@ public class BipartiteMatching {
     private int SINK; // index of sink node in residual graph array
 
     public void maxMatches() {
-        while (true) {
-            Node[] levelGraph = new Node[graph.length];
-            if (!createLG(levelGraph)) { break; }
+        Node[] levelGraph = new Node[graph.length];
+        boolean done = !createLG(levelGraph);
+        while (!done) { // dont say while(true), reorder createLG to not need it
             Node curr = levelGraph[SOURCE];
             Stack<Integer> path = new Stack<>();
             path.add(SOURCE);
@@ -30,7 +30,7 @@ public class BipartiteMatching {
                 } else if (curr.getNext() == -1) {
                     int removedNode = path.pop();
                     curr = levelGraph[path.peek()];
-                    for (Node node : levelGraph) {
+                    for (Node node : levelGraph) { //optimizations here can be made
                         node.removeEdge(removedNode);
                     }
                 } else {
@@ -38,6 +38,7 @@ public class BipartiteMatching {
                     curr = levelGraph[curr.getNext()];
                 }
             }
+            done = !createLG(levelGraph);
         }
         outputMatchings();
     }
@@ -55,13 +56,11 @@ public class BipartiteMatching {
     }
 
     public boolean createLG(Node[] levelGraph) {
-        HashSet<Integer> visited = new HashSet<Integer>();
         int[] level = new int[graph.length];
-        Arrays.fill(level, -1);
-        level[SOURCE] = 0;
+        level[SOURCE] = 1;
         Queue<Integer> bfs = new LinkedList<>();
         for (int i = 0; i < graph.length; i++) {
-            levelGraph[i] = new Node(graph[i].getName());
+            levelGraph[i] = new Node("");
         }
         boolean foundSink = false;
         bfs.add(0);
@@ -71,15 +70,12 @@ public class BipartiteMatching {
             if (curr == SINK) { foundSink = true; }
                 for (Object currEdge : graph[curr].getEdges()) {
                     int edge = (int) currEdge;
-                    if (level[edge] == -1) {
+                    if (level[edge] == 0) {
                         level[edge] = level[curr] + 1;
+                        bfs.add(edge);
                     }
                     if (level[edge] > level[curr]) {
                         levelGraph[curr].addEdge(edge);
-                    }
-                    if (!visited.contains(edge)) {
-                        visited.add(edge);
-                        bfs.add(edge);
                     }
                 }
         }
